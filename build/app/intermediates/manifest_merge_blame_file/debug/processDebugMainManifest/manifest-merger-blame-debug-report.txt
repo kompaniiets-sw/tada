@@ -60,7 +60,7 @@
 42-->[androidx.core:core:1.13.1] C:\Users\Tatyana\.gradle\caches\8.10.2\transforms\8cf478dec41eed746328fa8046755ba2\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
 43        android:debuggable="true"
 44        android:extractNativeLibs="true"
-45        android:icon="@mipmap/ic_launcher"
+45        android:icon="@mipmap/launcher_icon"
 46        android:label="tada" >
 47        <activity
 48            android:name="com.example.tada.MainActivity"

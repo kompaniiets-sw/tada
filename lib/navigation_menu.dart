@@ -1,13 +1,10 @@
-
 import 'package:tada/ui/home_screen.dart';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:tada/helpers/helper_functions.dart';
 import 'package:tada/ui/profile_screen.dart';
 import 'package:tada/ui/tasks_screen.dart';
-import 'package:tada/utils/constants/colors.dart';
+import 'package:tada/common/bindings/general_bindings.dart';
 
 class NavigationMenu extends StatelessWidget {
   const NavigationMenu({super.key});
@@ -15,7 +12,8 @@ class NavigationMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(NavigationController());
-    final bool darkMode = EHelperFunctions.isDarkMode(context);
+    final themeController = Get.find<ThemeController>();
+    final bool darkMode = themeController.isDarkMode.value;
 
     return Scaffold(
       bottomNavigationBar: Obx(
@@ -24,12 +22,10 @@ class NavigationMenu extends StatelessWidget {
           elevation: 0,
           selectedIndex: controller.selectedIndex.value,
           onDestinationSelected: (index) => controller.selectedIndex.value = index,
-          backgroundColor: darkMode ? EColors.night : const Color.fromRGBO(255, 255, 255, 1),
           indicatorColor: darkMode ? Colors.white.withAlpha(26) : Colors.black.withAlpha(26),
           indicatorShape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-
           destinations: [
             NavigationDestination(icon: Icon(Iconsax.timer_1), label: 'Pomodoro',),
             NavigationDestination(icon: Icon(Iconsax.task), label: 'Tasks'),
@@ -38,12 +34,15 @@ class NavigationMenu extends StatelessWidget {
         ),
       ),
       body: Obx(
-        () => controller.screens[controller.selectedIndex.value],
+        () => Stack(
+          children: [
+            controller.screens[controller.selectedIndex.value],
+          ],
+        ),
       ),
     );
   }
-  }
-  
+}
 
 class NavigationController extends GetxController {
   final Rx<int> selectedIndex = 0.obs;
