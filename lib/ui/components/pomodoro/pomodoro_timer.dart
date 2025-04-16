@@ -3,25 +3,57 @@ import 'package:tada/common/widgets/icons/rounded_icon.dart';
 import 'dart:async';
 import 'package:tada/utils/constants/colors.dart';
 import 'package:tada/utils/constants/sizes.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 /// Віджет Pomodoro таймера, який відображає круговий прогрес-бар та кнопки керування
 class PomodoroTimer extends StatefulWidget {
-  const PomodoroTimer({super.key});
+  final int focusDuration;
+  final int breakDuration;
+  final int longBreakDuration;
+
+  const PomodoroTimer({
+    super.key,
+    required this.focusDuration,
+    required this.breakDuration,
+    required this.longBreakDuration,
+  });
 
   @override
   State<PomodoroTimer> createState() => _PomodoroTimerState();
 }
 
 class _PomodoroTimerState extends State<PomodoroTimer> {
-  // Стандартна тривалість таймера - 25 хвилин (в секундах)
-  static const int _defaultDuration = 25 * 60; 
-
   // Змінні для керування станом таймера
-  int _timeLeft = _defaultDuration; 
-  Timer? _timer; 
-  bool _isRunning = false; 
+  late int _timeLeft;
+  Timer? _timer;
+  bool _isRunning = false;
+  
+  // Змінні для циклів помодоро
+  int _currentCycle = 0;
+  bool _isFocusTime = true;
+  bool _isLongBreak = false;
 
-  /// Запускає таймер, якщо він ще не запущений
+  @override
+  void initState() {
+    super.initState();
+    _timeLeft = widget.focusDuration;
+  }
+
+  @override
+  void didUpdateWidget(PomodoroTimer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.focusDuration != widget.focusDuration ||
+        oldWidget.breakDuration != widget.breakDuration ||
+        oldWidget.longBreakDuration != widget.longBreakDuration) {
+      _resetTimer();
+    }
+  }
+
+  String get _currentStateText {
+    if (_isLongBreak) return 'Long Break Time';
+    return _isFocusTime ? 'Focus Session' : 'Break Time';
+  }
+
   void _startTimer() {
     if (!_isRunning && _timeLeft > 0) {
       setState(() {
@@ -33,18 +65,33 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
             _timeLeft--;
           });
         } else {
-          // Таймер дійшов до нуля
           _timer?.cancel();
           setState(() {
-            _isRunning = false; // Зупиняємо таймер
+            _isRunning = false;
+            _switchToNextPhase();
           });
-          // Тут можна додати логіку сповіщення або автоматичного переходу
         }
       });
     }
   }
 
-  /// Зупиняє таймер
+  void _switchToNextPhase() {
+    if (_isFocusTime) {
+      _isFocusTime = false;
+      _timeLeft = _isLongBreak ? widget.longBreakDuration : widget.breakDuration;
+    } else {
+      _isFocusTime = true;
+      _timeLeft = widget.focusDuration;
+      
+      if (!_isLongBreak) {
+        _currentCycle = (_currentCycle + 1) % 4;
+        _isLongBreak = _currentCycle == 0;
+      } else {
+        _isLongBreak = false;
+      }
+    }
+  }
+
   void _pauseTimer() {
     if (_isRunning) {
       _timer?.cancel();
@@ -54,16 +101,17 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
     }
   }
 
-  /// Скидає таймер до початкового значення
   void _resetTimer() {
-    _timer?.cancel(); 
+    _timer?.cancel();
     setState(() {
-      _timeLeft = _defaultDuration;
-      _isRunning = false; 
+      _timeLeft = widget.focusDuration;
+      _isRunning = false;
+      _currentCycle = 0;
+      _isFocusTime = true;
+      _isLongBreak = false;
     });
   }
 
-  /// Форматує час у формат MM:SS
   String _formatTime(int seconds) {
     int minutes = seconds ~/ 60;
     int remainingSeconds = seconds % 60;
@@ -79,49 +127,48 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
   @override
   Widget build(BuildContext context) {
     final dark = Theme.of(context).brightness == Brightness.dark;
-    // Додаємо перевірку на нуль, щоб уникнути ділення на нуль, якщо _defaultDuration буде 0
-    final progress = _defaultDuration > 0 ? _timeLeft / _defaultDuration : 0.0;
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
-    final timerSize =
-        size.width < size.height ? size.width * 0.7 : size.height * 0.7;
-
-    // Визначаємо, чи показувати кнопку Reset
-    final showResetButton = _timeLeft < _defaultDuration && _timeLeft > 0; 
+    final timerSize = size.width < size.height ? size.width * 0.7 : size.height * 0.7;
+    final progress = _isFocusTime 
+        ? _timeLeft / widget.focusDuration 
+        : (_isLongBreak ? _timeLeft / widget.longBreakDuration : _timeLeft / widget.breakDuration);
 
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          // Текст поточного стану
+          Text(
+            _currentStateText,
+            style: theme.textTheme.titleLarge?.copyWith(
+              color: theme.colorScheme.onSurface,
+            ),
+          ),
+          const SizedBox(height: ESizes.spaceBtwItems),
+
+          // Таймер
           SizedBox(
-            width: timerSize,
-            height: timerSize,
+            width: 300,
+            height: 300,
             child: Stack(
               alignment: Alignment.center,
               children: [
-                // Круговий прогрес-бар
                 SizedBox(
-                  // Обмежуємо розмір CircularProgressIndicator
-                  width: timerSize,
-                  height: timerSize,
+                  width: 300,
+                  height: 300,
                   child: CircularProgressIndicator(
-                    value: 1 - progress, // Прогрес від 1 до 0
+                    value: 1 - progress,
                     strokeWidth: 10,
-                    backgroundColor:
-                        dark
-                            ? Colors.grey.shade800
-                            : Colors
-                                .grey
-                                .shade300, // Трохи змінені кольори фону
+                    backgroundColor: dark ? Colors.grey.shade800 : Colors.grey.shade300,
                     color: EColors.accent,
-                    strokeCap: StrokeCap.round, // Закруглені кінці
+                    strokeCap: StrokeCap.round,
                   ),
                 ),
-                // Текст таймера
                 Text(
                   _formatTime(_timeLeft),
-                  style: theme.textTheme.displayLarge?.copyWith(
-                    fontSize: timerSize * 0.2, // Динамічний розмір шрифту
+                  style: GoogleFonts.robotoMono(
+                    fontSize: 48,
                     fontWeight: FontWeight.normal,
                     color: theme.colorScheme.onSurface,
                   ),
@@ -129,28 +176,40 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
               ],
             ),
           ),
-          SizedBox(height: ESizes.spaceBtwSections * 1.5,), 
-          // Рядок з кнопками керування
+
+          const SizedBox(height: ESizes.spaceBtwSections),
+
+          // Індикатори циклів
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(4, (index) {
+              final isCompleted = index < _currentCycle;
+              return Container(
+                width: 12,
+                height: 12,
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isCompleted ? EColors.accent : (dark ? Colors.grey.shade800 : Colors.grey.shade300),
+                ),
+              );
+            }),
+          ),
+
+          const SizedBox(height: ESizes.spaceBtwSections * 1.5),
+
+          // Кнопки керування
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Кнопка Play/Pause (ЗАВЖДИ ВИДИМА)
               RoundButton(
-                // Використовуємо _pauseTimer коли запущено, і _startTimer коли ні
                 onPressed: _isRunning ? _pauseTimer : _startTimer,
-                // Іконка змінюється відповідно до стану _isRunning
                 icon: _isRunning ? Icons.pause : Icons.play_arrow,
                 color: dark ? EColors.white : EColors.night,
                 size: timerSize * 0.12,
               ),
-
-              // УМОВНО ПОКАЗУЄМО ВІДСТУП ТА КНОПКУ RESET
-              // Використовуємо collection-if: якщо умова true, додаємо елементи списку [...]
-              if (showResetButton) ...[
-                SizedBox(
-                  width: timerSize * 0.08,
-                ), // Відступ показуємо тільки з кнопкою Reset
-                // Кнопка скидання (видима тільки якщо showResetButton == true)
+              if (_timeLeft < (_isFocusTime ? widget.focusDuration : (_isLongBreak ? widget.longBreakDuration : widget.breakDuration))) ...[
+                SizedBox(width: timerSize * 0.08),
                 RoundButton(
                   onPressed: _resetTimer,
                   icon: Icons.refresh,
@@ -165,4 +224,3 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
     );
   }
 }
-
