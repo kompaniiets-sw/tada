@@ -4,12 +4,11 @@ class EImages {
   static const String appLogo = "assets/logo/black-cat-logo.png";
 
   // --- Social Logos
-  static const String google = "";
+  static const String google = "assets/logo/google.png";
   static const String facebook = "";
 
   // --- Onboarding Images
-  static const String onboarding1 = "";
-  static const String onboarding2 = "";
-  static const String onboarding3 = "";
-
+  static const String onboarding1 = "assets/images/onboarding1.png";
+  static const String onboarding2 = "assets/images/onboarding2.png";
+  static const String onboarding3 = "assets/images/onboarding3.png";
 }

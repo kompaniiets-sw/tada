@@ -11,7 +11,7 @@ import 'custom_themes/elevated_button_theme.dart';
 import 'custom_themes/outlined_button_theme.dart';
 import 'custom_themes/text_field_theme.dart';
 
-class EAppTheme{
+class EAppTheme {
   EAppTheme._();
 
   /// Light Theme

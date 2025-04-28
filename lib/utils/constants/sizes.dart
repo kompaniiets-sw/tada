@@ -1,5 +1,4 @@
 class ESizes {
-
   static const double xs = 4.0;
   static const double sm = 8.0;
   static const double md = 16.0;
@@ -62,6 +61,5 @@ class ESizes {
   static const double gridViewSpacing = 16.0;
 
   static double defaultSize = 16.0;
-
-
+  static double defaultSizeBig = 70;
 }

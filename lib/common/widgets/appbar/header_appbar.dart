@@ -31,13 +31,15 @@ class _HeaderAppbarState extends State<HeaderAppbar> {
   @override
   Widget build(BuildContext context) {
     if (!mounted) return const SizedBox.shrink();
-    
+
     final dark = EHelperFunctions.isDarkMode(context);
     return AppBar(
       centerTitle: widget.centerTitle,
       title: Text(widget.title),
-      backgroundColor: widget.backgroundColor ?? (dark ? EColors.night : Colors.white),
-      foregroundColor: widget.foregroundColor ?? (dark ? Colors.white : EColors.night),
+      backgroundColor:
+          widget.backgroundColor ?? (dark ? EColors.dark : EColors.light),
+      foregroundColor:
+          widget.foregroundColor ?? (dark ? EColors.light : EColors.dark),
       elevation: widget.elevation,
       actions: widget.actions,
     );

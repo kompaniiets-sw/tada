@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "68909437012",
+    "project_id": "tada-9760b",
+    "storage_bucket": "tada-9760b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:68909437012:android:8936cec4dc105e62af5dc1",
+        "android_client_info": {
+          "package_name": "com.example.tada"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "68909437012-f7kcbofmb0nt372cnc7e8933pedk9d7o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.tada",
+            "certificate_hash": "c0b0a0d5d1937b44a4ea0f1b7bd6e899cab7a550"
+          }
+        },
+        {
+          "client_id": "68909437012-e2o0mjcg5v63modfm062j1toe18lq4fp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBAXqhny1oR7OeSBcoqBAlxW59HnqUe_F8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "68909437012-e2o0mjcg5v63modfm062j1toe18lq4fp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "68909437012-aaanl63mt7581g33mpvm70kuvjdkt745.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.tada"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
